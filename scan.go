@@ -8,11 +8,16 @@ import (
 
 const packetDefaultSize = 188
 
+// PacketScanner is a wrapper of bufio.Scanner.
+type PacketScanner struct {
+	*bufio.Scanner
+}
+
 // NewPacketScanner returns a new Scanner to read from r.
-func NewPacketScanner(r io.Reader) *bufio.Scanner {
+func NewPacketScanner(r io.Reader) *PacketScanner {
 	s := bufio.NewScanner(r)
 	s.Split(splitPacket)
-	return s
+	return &PacketScanner{s}
 }
 
 func splitPacket(data []byte, atEOF bool) (advance int, token []byte, err error) {
@@ -30,4 +35,9 @@ func splitPacket(data []byte, atEOF bool) (advance int, token []byte, err error)
 		return len(data), data, nil
 	}
 	return 0, nil, nil
+}
+
+// Packet returns bytes as Packet.
+func (s *PacketScanner) Packet() Packet {
+	return s.Bytes()
 }
