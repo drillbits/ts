@@ -342,9 +342,59 @@ func TestAdaptationFieldExtensionFlag(t *testing.T) {
 	}
 }
 
+func TestPCR(t *testing.T) {
+	// 10110111 11111110 01111010 00110100 00001111 00010100 01111110 01111000 11111111
+	af := AdaptationField{0xB7, 0xFE, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
+	expected := []byte{0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+
+	p := af.PCR()
+	if bytes.Compare(p, expected) != 0 {
+		t.Errorf("got: %X, expected: %X", p, expected)
+	}
+
+	// 10110111 11101110 01111010 00110100 00001111 00010100 01111110 01111000 11111111
+	af = AdaptationField{0xB7, 0xEE, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
+	expected = nil
+
+	p = af.PCR()
+	if bytes.Compare(p, expected) != 0 {
+		t.Errorf("got: %X, expected: %X", p, expected)
+	}
+}
+
+func TestOPCR(t *testing.T) {
+	// OPCR only
+	// 10110111 11101110 01111010 00110100 00001111 00010100 01111110 01111000 11111111
+	af := AdaptationField{0xB7, 0xEE, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
+	expected := []byte{0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+
+	o := af.OPCR()
+	if bytes.Compare(o, expected) != 0 {
+		t.Errorf("got: %X, expected: %X", o, expected)
+	}
+
+	// PCR and OPCR
+	// 10110111 11111110 11111111 11111111 11111111 11111111 11111111 11111111 01111010 00110100 00001111 00010100 01111110 01111000 11111111
+	af = AdaptationField{0xB7, 0xFE, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
+	expected = []byte{0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+
+	o = af.OPCR()
+	if bytes.Compare(o, expected) != 0 {
+		t.Errorf("got: %X, expected: %X", o, expected)
+	}
+
+	// No PCR, No OPCR
+	// 10110111 11100110 01111010 00110100 00001111 00010100 01111110 01111000 11111111
+	af = AdaptationField{0xB7, 0xE6, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
+	expected = nil
+
+	o = af.OPCR()
+	if bytes.Compare(o, expected) != 0 {
+		t.Errorf("got: %X, expected: %X", o, expected)
+	}
+}
+
 // TODO
-// func TestPCR(t *testing.T) {}
-// func TestOPCR(t *testing.T) {}
 // func TestSpliceCountdown(t *testing.T) {}
 // func TestTransportPrivateDataLength(t *testing.T) {}
 // func TestTransportPrivateData(t *testing.T) {}
