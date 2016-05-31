@@ -5,6 +5,22 @@ import (
 	"testing"
 )
 
+func appendBytes(bs ...[]byte) []byte {
+	var buf []byte
+	for _, b := range bs {
+		buf = append(buf, b...)
+	}
+	return buf
+}
+
+func bx(b []byte, times int) []byte {
+	var buf []byte
+	for i := 0; i < times; i++ {
+		buf = append(buf, b...)
+	}
+	return buf
+}
+
 func TestSyncWord(t *testing.T) {
 	// 01000111 00000001 00010001 00110111
 	p := Packet{0x47, 0x01, 0x11, 0x37}
@@ -343,19 +359,26 @@ func TestAdaptationFieldExtensionFlag(t *testing.T) {
 }
 
 func TestPCR(t *testing.T) {
-	// 10110111 11111110 01111010 00110100 00001111 00010100 01111110 01111000 11111111
-	af := AdaptationField{0xB7, 0xFE, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
-	expected := []byte{0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+	// 10110111
+	afLen := []byte{0xB7}
+	// 01111010 00110100 00001111 00010100 01111110 01111000
+	testPCR := []byte{0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+	// 11111111
+	stuff := []byte{0xFF}
 
+	// 11111110
+	pcrOnly := []byte{0xFE}
+	af := AdaptationField(appendBytes(afLen, pcrOnly, testPCR, stuff))
+	expected := testPCR
 	p := af.PCR()
 	if bytes.Compare(p, expected) != 0 {
 		t.Errorf("got: %X, expected: %X", p, expected)
 	}
 
-	// 10110111 11101110 01111010 00110100 00001111 00010100 01111110 01111000 11111111
-	af = AdaptationField{0xB7, 0xEE, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
+	// 11101110
+	noPCR := []byte{0xEE}
+	af = AdaptationField(appendBytes(afLen, noPCR, testPCR, stuff))
 	expected = nil
-
 	p = af.PCR()
 	if bytes.Compare(p, expected) != 0 {
 		t.Errorf("got: %X, expected: %X", p, expected)
@@ -363,31 +386,35 @@ func TestPCR(t *testing.T) {
 }
 
 func TestOPCR(t *testing.T) {
-	// OPCR only
-	// 10110111 11101110 01111010 00110100 00001111 00010100 01111110 01111000 11111111
-	af := AdaptationField{0xB7, 0xEE, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
-	expected := []byte{0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+	// 10110111
+	afLen := []byte{0xB7}
+	// 01111010 00110100 00001111 00010100 01111110 01111000
+	testOPCR := []byte{0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+	// 11111111
+	stuff := []byte{0xFF}
 
+	// 11101110
+	opcrOnly := []byte{0xEE}
+	af := AdaptationField(appendBytes(afLen, opcrOnly, testOPCR, stuff))
+	expected := testOPCR
 	o := af.OPCR()
 	if bytes.Compare(o, expected) != 0 {
 		t.Errorf("got: %X, expected: %X", o, expected)
 	}
 
-	// PCR and OPCR
-	// 10110111 11111110 11111111 11111111 11111111 11111111 11111111 11111111 01111010 00110100 00001111 00010100 01111110 01111000 11111111
-	af = AdaptationField{0xB7, 0xFE, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
-	expected = []byte{0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
-
+	// 11111110
+	pcrAndOPCR := []byte{0xFE}
+	af = AdaptationField(appendBytes(afLen, pcrAndOPCR, bx(stuff, 6), testOPCR))
+	expected = testOPCR
 	o = af.OPCR()
 	if bytes.Compare(o, expected) != 0 {
 		t.Errorf("got: %X, expected: %X", o, expected)
 	}
 
-	// No PCR, No OPCR
-	// 10110111 11100110 01111010 00110100 00001111 00010100 01111110 01111000 11111111
-	af = AdaptationField{0xB7, 0xE6, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
+	// 11100110
+	noPCRNoOPCR := []byte{0xE6}
+	af = AdaptationField(appendBytes(afLen, noPCRNoOPCR, testOPCR, stuff))
 	expected = nil
-
 	o = af.OPCR()
 	if bytes.Compare(o, expected) != 0 {
 		t.Errorf("got: %X, expected: %X", o, expected)
