@@ -421,9 +421,106 @@ func TestOPCR(t *testing.T) {
 	}
 }
 
+func TestSpliceCountdown(t *testing.T) {
+	// 10110111
+	afLen := []byte{0xB7}
+	// 1101
+	testSC := byte(0xD)
+	// 11111111
+	stuff := []byte{0xFF}
+
+	// 11100100
+	scOnly := []byte{0xE4}
+	af := AdaptationField(appendBytes(afLen, scOnly, []byte{testSC}))
+	expected := testSC
+	sc := af.SpliceCountdown()
+	if sc != expected {
+		t.Errorf("got: %d, expected: %d", sc, expected)
+	}
+
+	// 11110100
+	pcrAndSC := []byte{0xF4}
+	af = AdaptationField(appendBytes(afLen, pcrAndSC, bx(stuff, 6), []byte{testSC}))
+	expected = testSC
+	sc = af.SpliceCountdown()
+	if sc != expected {
+		t.Errorf("got: %d, expected: %d", sc, expected)
+	}
+
+	// 11111100
+	pcrAndOCRAndSC := []byte{0xFC}
+	af = AdaptationField(appendBytes(afLen, pcrAndOCRAndSC, bx(stuff, 12), []byte{testSC}))
+	expected = testSC
+	sc = af.SpliceCountdown()
+	if sc != expected {
+		t.Errorf("got: %d, expected: %d", sc, expected)
+	}
+
+	// 11111000
+	noSC := []byte{0xF8}
+	af = AdaptationField(appendBytes(afLen, noSC, bx(stuff, 12)))
+	expected = 0
+	sc = af.SpliceCountdown()
+	if sc != expected {
+		t.Errorf("got: %d, expected: %d", sc, expected)
+	}
+}
+
+func TestTransportPrivateDataLength(t *testing.T) {
+	// 10110111
+	afLen := []byte{0xB7}
+	// 1101
+	testLen := byte(0xD)
+	// 11111111
+	stuff := []byte{0xFF}
+
+	// 11100010
+	lenOnly := []byte{0xE2}
+	af := AdaptationField(appendBytes(afLen, lenOnly, []byte{testLen}))
+	expected := int(testLen)
+	tpdLen := af.TransportPrivateDataLength()
+	if tpdLen != expected {
+		t.Errorf("got: %d, expected: %d", tpdLen, expected)
+	}
+
+	// 11110010
+	pcrAndLen := []byte{0xF2}
+	af = AdaptationField(appendBytes(afLen, pcrAndLen, bx(stuff, 6), []byte{testLen}))
+	expected = int(testLen)
+	tpdLen = af.TransportPrivateDataLength()
+	if tpdLen != expected {
+		t.Errorf("got: %d, expected: %d", tpdLen, expected)
+	}
+
+	// 11111010
+	pcrAndOCRAndLen := []byte{0xFA}
+	af = AdaptationField(appendBytes(afLen, pcrAndOCRAndLen, bx(stuff, 12), []byte{testLen}))
+	expected = int(testLen)
+	tpdLen = af.TransportPrivateDataLength()
+	if tpdLen != expected {
+		t.Errorf("got: %d, expected: %d", tpdLen, expected)
+	}
+
+	// 11111110
+	pcrAndOCRAndSCAndLen := []byte{0xFE}
+	af = AdaptationField(appendBytes(afLen, pcrAndOCRAndSCAndLen, bx(stuff, 13), []byte{testLen}))
+	expected = int(testLen)
+	tpdLen = af.TransportPrivateDataLength()
+	if tpdLen != expected {
+		t.Errorf("got: %d, expected: %d", tpdLen, expected)
+	}
+
+	// 11111100
+	noLen := []byte{0xFC}
+	af = AdaptationField(appendBytes(afLen, noLen, bx(stuff, 13)))
+	expected = 0
+	tpdLen = af.TransportPrivateDataLength()
+	if tpdLen != expected {
+		t.Errorf("got: %d, expected: %d", tpdLen, expected)
+	}
+}
+
 // TODO
-// func TestSpliceCountdown(t *testing.T) {}
-// func TestTransportPrivateDataLength(t *testing.T) {}
 // func TestTransportPrivateData(t *testing.T) {}
 // func TestAdaptationExtension(t *testing.T) {}
 // func TestAdaptationExtensionLength(t *testing.T) {}
