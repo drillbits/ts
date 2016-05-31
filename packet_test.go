@@ -218,17 +218,17 @@ func TestDiscontinuityIndicator(t *testing.T) {
 	// 10110111 01111111 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af := AdaptationField{0xB7, 0x7F, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di := af.DiscontinuityIndicator()
-	if di {
-		t.Errorf("got: %t, expected: %t", di, false)
+	ind := af.DiscontinuityIndicator()
+	if ind {
+		t.Errorf("got: %t, expected: %t", ind, false)
 	}
 
 	// 10110111 10000000 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af = AdaptationField{0xB7, 0x80, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di = af.DiscontinuityIndicator()
-	if !di {
-		t.Errorf("got: %t, expected: %t", di, true)
+	ind = af.DiscontinuityIndicator()
+	if !ind {
+		t.Errorf("got: %t, expected: %t", ind, true)
 	}
 }
 
@@ -236,17 +236,17 @@ func TestRandomAccessIndicator(t *testing.T) {
 	// 10110111 10111111 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af := AdaptationField{0xB7, 0xBF, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di := af.RandomAccessIndicator()
-	if di {
-		t.Errorf("got: %t, expected: %t", di, false)
+	ind := af.RandomAccessIndicator()
+	if ind {
+		t.Errorf("got: %t, expected: %t", ind, false)
 	}
 
 	// 10110111 01000000 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af = AdaptationField{0xB7, 0x40, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di = af.RandomAccessIndicator()
-	if !di {
-		t.Errorf("got: %t, expected: %t", di, true)
+	ind = af.RandomAccessIndicator()
+	if !ind {
+		t.Errorf("got: %t, expected: %t", ind, true)
 	}
 }
 
@@ -254,17 +254,17 @@ func TestElementaryStreamPriorityIndicator(t *testing.T) {
 	// 10110111 11011111 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af := AdaptationField{0xB7, 0xDF, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di := af.ElementaryStreamPriorityIndicator()
-	if di {
-		t.Errorf("got: %t, expected: %t", di, false)
+	ind := af.ElementaryStreamPriorityIndicator()
+	if ind {
+		t.Errorf("got: %t, expected: %t", ind, false)
 	}
 
 	// 10110111 00100000 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af = AdaptationField{0xB7, 0x20, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di = af.ElementaryStreamPriorityIndicator()
-	if !di {
-		t.Errorf("got: %t, expected: %t", di, true)
+	ind = af.ElementaryStreamPriorityIndicator()
+	if !ind {
+		t.Errorf("got: %t, expected: %t", ind, true)
 	}
 }
 
@@ -272,17 +272,17 @@ func TestPCRFlag(t *testing.T) {
 	// 10110111 11101111 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af := AdaptationField{0xB7, 0xEF, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di := af.PCRFlag()
-	if di {
-		t.Errorf("got: %t, expected: %t", di, false)
+	flg := af.PCRFlag()
+	if flg {
+		t.Errorf("got: %t, expected: %t", flg, false)
 	}
 
 	// 10110111 00010000 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af = AdaptationField{0xB7, 0x10, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di = af.PCRFlag()
-	if !di {
-		t.Errorf("got: %t, expected: %t", di, true)
+	flg = af.PCRFlag()
+	if !flg {
+		t.Errorf("got: %t, expected: %t", flg, true)
 	}
 }
 
@@ -290,17 +290,17 @@ func TestOPCRFlag(t *testing.T) {
 	// 10110111 11110111 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af := AdaptationField{0xB7, 0xF7, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di := af.OPCRFlag()
-	if di {
-		t.Errorf("got: %t, expected: %t", di, false)
+	flg := af.OPCRFlag()
+	if flg {
+		t.Errorf("got: %t, expected: %t", flg, false)
 	}
 
 	// 10110111 00001000 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af = AdaptationField{0xB7, 0x08, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di = af.OPCRFlag()
-	if !di {
-		t.Errorf("got: %t, expected: %t", di, true)
+	flg = af.OPCRFlag()
+	if !flg {
+		t.Errorf("got: %t, expected: %t", flg, true)
 	}
 }
 
@@ -308,17 +308,17 @@ func TestSplicingPointFlag(t *testing.T) {
 	// 10110111 11111011 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af := AdaptationField{0xB7, 0xFB, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di := af.SplicingPointFlag()
-	if di {
-		t.Errorf("got: %t, expected: %t", di, false)
+	flg := af.SplicingPointFlag()
+	if flg {
+		t.Errorf("got: %t, expected: %t", flg, false)
 	}
 
 	// 10110111 00000100 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af = AdaptationField{0xB7, 0x04, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di = af.SplicingPointFlag()
-	if !di {
-		t.Errorf("got: %t, expected: %t", di, true)
+	flg = af.SplicingPointFlag()
+	if !flg {
+		t.Errorf("got: %t, expected: %t", flg, true)
 	}
 }
 
@@ -326,17 +326,17 @@ func TestTransportPrivateDataFlag(t *testing.T) {
 	// 10110111 11111101 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af := AdaptationField{0xB7, 0xFD, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di := af.TransportPrivateDataFlag()
-	if di {
-		t.Errorf("got: %t, expected: %t", di, false)
+	flg := af.TransportPrivateDataFlag()
+	if flg {
+		t.Errorf("got: %t, expected: %t", flg, false)
 	}
 
 	// 10110111 00000010 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af = AdaptationField{0xB7, 0x02, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di = af.TransportPrivateDataFlag()
-	if !di {
-		t.Errorf("got: %t, expected: %t", di, true)
+	flg = af.TransportPrivateDataFlag()
+	if !flg {
+		t.Errorf("got: %t, expected: %t", flg, true)
 	}
 }
 
@@ -344,17 +344,120 @@ func TestAdaptationFieldExtensionFlag(t *testing.T) {
 	// 10110111 11111110 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af := AdaptationField{0xB7, 0xFE, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di := af.AdaptationFieldExtensionFlag()
-	if di {
-		t.Errorf("got: %t, expected: %t", di, false)
+	flg := af.AdaptationFieldExtensionFlag()
+	if flg {
+		t.Errorf("got: %t, expected: %t", flg, false)
 	}
 
 	// 10110111 00000001 01111010 00110100 00001111 00010100 01111110 01111000 11111111
 	af = AdaptationField{0xB7, 0x01, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78, 0xFF}
 
-	di = af.AdaptationFieldExtensionFlag()
-	if !di {
-		t.Errorf("got: %t, expected: %t", di, true)
+	flg = af.AdaptationFieldExtensionFlag()
+	if !flg {
+		t.Errorf("got: %t, expected: %t", flg, true)
+	}
+}
+
+func TestPCR(t *testing.T) {
+	// 10110111 00010000 01111010 00110100 00001111 00010100 01111110 01111000
+	af := AdaptationField{0xB7, 0x10, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+	expected := []byte{0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+
+	pcr := af.PCR()
+	if bytes.Compare(pcr, expected) != 0 {
+		t.Errorf("got: 0x%x, expected: 0x%x", pcr, expected)
+	}
+
+	// PCRFlag is false
+	// 10110111 00000000 01111010 00110100 00001111 00010100 01111110 01111000
+	af = AdaptationField{0xB7, 0x00, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+	expected = nil
+
+	pcr = af.PCR()
+	if bytes.Compare(pcr, expected) != 0 {
+		t.Errorf("got: 0x%x, expected: 0x%x", pcr, expected)
+	}
+}
+
+func TestOPCR(t *testing.T) {
+	// 10110111 00001000 01111010 00110100 00001111 00010100 01111110 01111000
+	af := AdaptationField{0xB7, 0x08, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+	expected := []byte{0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+
+	opcr := af.OPCR()
+	if bytes.Compare(opcr, expected) != 0 {
+		t.Errorf("got: 0x%x, expected: 0x%x", opcr, expected)
+	}
+
+	// OPCRFlag is false
+	// 10110111 00000000 01111010 00110100 00001111 00010100 01111110 01111000
+	af = AdaptationField{0xB7, 0x00, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+	expected = nil
+
+	opcr = af.OPCR()
+	if bytes.Compare(opcr, expected) != 0 {
+		t.Errorf("got: 0x%x, expected: 0x%x", opcr, expected)
+	}
+
+	// with PCR
+	// 10110111 00011000 11111111 11111111 11111111 11111111 11111111 11111111 01111010 00110100 00001111 00010100 01111110 01111000
+	af = AdaptationField{0xB7, 0x18, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+	expected = []byte{0x7A, 0x34, 0x0F, 0x14, 0x7E, 0x78}
+
+	opcr = af.OPCR()
+	if bytes.Compare(opcr, expected) != 0 {
+		t.Errorf("got: 0x%x, expected: 0x%x", opcr, expected)
+	}
+}
+
+func TestSpliceCountdown(t *testing.T) {
+	// 10110111 00000100 01111010
+	af := AdaptationField{0xB7, 0x04, 0x7A}
+	expected := byte(0x7A)
+
+	sc := af.SpliceCountdown()
+	if sc != expected {
+		t.Errorf("got: 0x%x, expected: 0x%x", sc, expected)
+	}
+
+	// SplicingPointFlag is false
+	// 10110111 00000000 01111010
+	af = AdaptationField{0xB7, 0x00, 0x7A}
+	expected = 0
+
+	sc = af.SpliceCountdown()
+	if sc != expected {
+		t.Errorf("got: 0x%x, expected: 0x%x", sc, expected)
+	}
+
+	// with PCR
+	// 10110111 00010100 11111111 11111111 11111111 11111111 11111111 11111111 01111010
+	af = AdaptationField{0xB7, 0x14, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7A}
+	expected = byte(0x7A)
+
+	sc = af.SpliceCountdown()
+	if sc != expected {
+		t.Errorf("got: 0x%x, expected: 0x%x", sc, expected)
+	}
+
+	// with OPCR
+	// 10110111 00001100 11111111 11111111 11111111 11111111 11111111 11111111 01111010
+	af = AdaptationField{0xB7, 0x0C, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7A}
+	expected = byte(0x7A)
+
+	sc = af.SpliceCountdown()
+	if sc != expected {
+		t.Errorf("got: 0x%x, expected: 0x%x", sc, expected)
+	}
+
+	// with PCR, OPCR
+	// 10110111 00011100 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 11111111 01111010
+	af = AdaptationField{0xB7, 0x1C, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x7A}
+	expected = byte(0x7A)
+
+	sc = af.SpliceCountdown()
+	if sc != expected {
+		t.Errorf("got: 0x%x, expected: 0x%x", sc, expected)
 	}
 }
 
@@ -521,6 +624,10 @@ func TestTransportPrivateDataLength(t *testing.T) {
 }
 
 // TODO
+<<<<<<< HEAD
+=======
+// func TestTransportPrivateDataLength(t *testing.T) {}
+>>>>>>> 04fe5b78d89f1dc7eade394f1db887bec3b54a9d
 // func TestTransportPrivateData(t *testing.T) {}
 // func TestAdaptationExtension(t *testing.T) {}
 // func TestAdaptationExtensionLength(t *testing.T) {}
