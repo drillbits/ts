@@ -624,10 +624,6 @@ func TestTransportPrivateDataLength(t *testing.T) {
 }
 
 // TODO
-<<<<<<< HEAD
-=======
-// func TestTransportPrivateDataLength(t *testing.T) {}
->>>>>>> 04fe5b78d89f1dc7eade394f1db887bec3b54a9d
 // func TestTransportPrivateData(t *testing.T) {}
 // func TestAdaptationExtension(t *testing.T) {}
 // func TestAdaptationExtensionLength(t *testing.T) {}
