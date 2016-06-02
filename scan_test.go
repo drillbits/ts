@@ -7,7 +7,7 @@ import (
 
 func makeTestPacket(size int, filler byte) []byte {
 	p := make([]byte, size)
-	p[0] = SyncWord
+	p[0] = SyncByte
 	for i := 1; i < size; i++ {
 		p[i] = filler
 	}

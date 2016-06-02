@@ -27,7 +27,7 @@ func splitPacket(data []byte, atEOF bool) (advance int, token []byte, err error)
 	if len(data) < packetDefaultSize {
 		return 0, nil, nil
 	}
-	i := bytes.IndexByte(data[packetDefaultSize:len(data)], byte(SyncWord))
+	i := bytes.IndexByte(data[packetDefaultSize:len(data)], byte(SyncByte))
 	if i >= 0 {
 		return i + packetDefaultSize, data[0 : i+packetDefaultSize], nil
 	}

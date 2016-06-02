@@ -21,13 +21,13 @@ func bx(b []byte, times int) []byte {
 	return buf
 }
 
-func TestSyncWord(t *testing.T) {
+func TestSyncByte(t *testing.T) {
 	// 01000111 00000001 00010001 00110111
 	p := Packet{0x47, 0x01, 0x11, 0x37}
 
-	sw := p.SyncWord()
-	if sw != SyncWord {
-		t.Errorf("got: 0x%x, expected: 0x%x", sw, SyncWord)
+	sw := p.SyncByte()
+	if sw != SyncByte {
+		t.Errorf("got: 0x%x, expected: 0x%x", sw, SyncByte)
 	}
 }
 
@@ -95,11 +95,11 @@ func TestPID(t *testing.T) {
 	}
 }
 
-func TestScramblingControl(t *testing.T) {
+func TestTransportScramblingControl(t *testing.T) {
 	// 01000111 00000001 00010001 00110111
 	p := Packet{0x47, 0x01, 0x11, 0x37}
 
-	sc := p.ScramblingControl()
+	sc := p.TransportScramblingControl()
 	if sc != 0x00 {
 		t.Errorf("got: 0x%x, expected: 0x%x", sc, 0x00)
 	}
@@ -107,7 +107,7 @@ func TestScramblingControl(t *testing.T) {
 	// 01000111 00000001 00010001 01110111
 	p = Packet{0x47, 0x01, 0x11, 0x77}
 
-	sc = p.ScramblingControl()
+	sc = p.TransportScramblingControl()
 	if sc != 0x01 {
 		t.Errorf("got: 0x%x, expected: 0x%x", sc, 0x01)
 	}
@@ -115,7 +115,7 @@ func TestScramblingControl(t *testing.T) {
 	// 01000111 00000001 00010001 10110111
 	p = Packet{0x47, 0x01, 0x11, 0xb7}
 
-	sc = p.ScramblingControl()
+	sc = p.TransportScramblingControl()
 	if sc != 0x02 {
 		t.Errorf("got: 0x%x, expected: 0x%x", sc, 0x02)
 	}
@@ -123,45 +123,104 @@ func TestScramblingControl(t *testing.T) {
 	// 01000111 00000001 00010001 11110111
 	p = Packet{0x47, 0x01, 0x11, 0xf7}
 
-	sc = p.ScramblingControl()
+	sc = p.TransportScramblingControl()
 	if sc != 0x03 {
 		t.Errorf("got: 0x%x, expected: 0x%x", sc, 0x03)
 	}
 }
 
-func TestAdaptationFieldFlag(t *testing.T) {
-	// 01000111 00000001 00010001 00110111
-	p := Packet{0x47, 0x01, 0x11, 0x37}
+func TestAdaptationFieldControl(t *testing.T) {
+	reserved := byte(0x00)             // 00
+	payloadOnly := byte(0x01)          // 01
+	adaptationOnly := byte(0x02)       // 10
+	adaptationAndPayload := byte(0x03) // 11
 
-	aff := p.AdaptationFieldFlag()
-	if !aff {
-		t.Errorf("got: %t, expected: %t", aff, true)
+	// 01000111 00000001 00010001 00000000
+	p := Packet{0x47, 0x01, 0x11, 0x00}
+	ctrl := p.AdaptationFieldControl()
+	if ctrl != reserved {
+		t.Errorf("got: %X, expected: %X", ctrl, reserved)
 	}
 
-	// 01000111 00000001 00010001 00010111
-	p = Packet{0x47, 0x01, 0x11, 0x17}
+	// 01000111 00000001 00010001 00010000
+	p = Packet{0x47, 0x01, 0x11, 0x10}
+	ctrl = p.AdaptationFieldControl()
+	if ctrl != payloadOnly {
+		t.Errorf("got: %X, expected: %X", ctrl, payloadOnly)
+	}
 
-	aff = p.AdaptationFieldFlag()
-	if aff {
-		t.Errorf("got: %t, expected: %t", aff, false)
+	// 01000111 00000001 00010001 00100000
+	p = Packet{0x47, 0x01, 0x11, 0x20}
+	ctrl = p.AdaptationFieldControl()
+	if ctrl != adaptationOnly {
+		t.Errorf("got: %X, expected: %X", ctrl, adaptationOnly)
+	}
+
+	// 01000111 00000001 00010001 00110000
+	p = Packet{0x47, 0x01, 0x11, 0x30}
+	ctrl = p.AdaptationFieldControl()
+	if ctrl != adaptationAndPayload {
+		t.Errorf("got: %X, expected: %X", ctrl, adaptationAndPayload)
+	}
+}
+
+func TestAdaptationFieldFlag(t *testing.T) {
+	// 01000111 00000001 00010001 00000000
+	p := Packet{0x47, 0x01, 0x11, 0x00}
+	flg := p.AdaptationFieldFlag()
+	if flg {
+		t.Errorf("got: %t, expected: %t", flg, false)
+	}
+
+	// 01000111 00000001 00010001 00010000
+	p = Packet{0x47, 0x01, 0x11, 0x10}
+	flg = p.AdaptationFieldFlag()
+	if flg {
+		t.Errorf("got: %t, expected: %t", flg, false)
+	}
+
+	// 01000111 00000001 00010001 00100000
+	p = Packet{0x47, 0x01, 0x11, 0x20}
+	flg = p.AdaptationFieldFlag()
+	if !flg {
+		t.Errorf("got: %t, expected: %t", flg, true)
+	}
+
+	// 01000111 00000001 00010001 00110000
+	p = Packet{0x47, 0x01, 0x11, 0x30}
+	flg = p.AdaptationFieldFlag()
+	if !flg {
+		t.Errorf("got: %t, expected: %t", flg, true)
 	}
 }
 
 func TestPayloadFlag(t *testing.T) {
-	// 01000111 00000001 00010001 00110111
-	p := Packet{0x47, 0x01, 0x11, 0x37}
-
-	pf := p.PayloadFlag()
-	if !pf {
-		t.Errorf("got: %t, expected: %t", pf, true)
+	// 01000111 00000001 00010001 00000000
+	p := Packet{0x47, 0x01, 0x11, 0x00}
+	flg := p.PayloadFlag()
+	if flg {
+		t.Errorf("got: %t, expected: %t", flg, false)
 	}
 
-	// 01000111 00000001 00010001 00100111
-	p = Packet{0x47, 0x01, 0x11, 0x27}
+	// 01000111 00000001 00010001 00010000
+	p = Packet{0x47, 0x01, 0x11, 0x10}
+	flg = p.PayloadFlag()
+	if !flg {
+		t.Errorf("got: %t, expected: %t", flg, true)
+	}
 
-	pf = p.PayloadFlag()
-	if pf {
-		t.Errorf("got: %t, expected: %t", pf, false)
+	// 01000111 00000001 00010001 00100000
+	p = Packet{0x47, 0x01, 0x11, 0x20}
+	flg = p.PayloadFlag()
+	if flg {
+		t.Errorf("got: %t, expected: %t", flg, false)
+	}
+
+	// 01000111 00000001 00010001 00110000
+	p = Packet{0x47, 0x01, 0x11, 0x30}
+	flg = p.PayloadFlag()
+	if !flg {
+		t.Errorf("got: %t, expected: %t", flg, true)
 	}
 }
 

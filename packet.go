@@ -10,14 +10,14 @@ type PID uint16
 type AdaptationField []byte
 
 const (
-	// SyncWord is used to identify the start of a TS Packet.
-	SyncWord = 0x47
+	// SyncByte is used to identify the start of a TS Packet.
+	SyncByte = 0x47
 )
 
 // TS Header
 
-// SyncWord returns Sync word.
-func (p Packet) SyncWord() byte {
+// SyncByte returns Sync byte.
+func (p Packet) SyncByte() byte {
 	return p[0]
 }
 
@@ -44,26 +44,31 @@ func (p Packet) PID() PID {
 	return PID(uint16(p[1]&0x1f)<<8 | uint16(p[2]))
 }
 
-// ScramblingControl returns Scrambling control.
-func (p Packet) ScramblingControl() uint8 {
+// TransportScramblingControl returns Scrambling control.
+func (p Packet) TransportScramblingControl() uint8 {
 	return p[3] & 0xc0 >> 6
+}
+
+// AdaptationFieldControl returns Adaptation field control.
+func (p Packet) AdaptationFieldControl() byte {
+	return p[3] & 0x30 >> 4
 }
 
 // AdaptationFieldFlag returns Adaptation field flag.
 func (p Packet) AdaptationFieldFlag() bool {
-	i := p[3] & 0x20 >> 5
-	return i == 1
+	ctrl := p.AdaptationFieldControl()
+	return ctrl == 0x02 || ctrl == 0x03
 }
 
 // PayloadFlag returns Payload flag.
 func (p Packet) PayloadFlag() bool {
-	i := p[3] & 0x10 >> 4
-	return i == 1
+	ctrl := p.AdaptationFieldControl()
+	return ctrl == 0x01 || ctrl == 0x03
 }
 
 // ContinuityCounter returns Continuity counter.
 func (p Packet) ContinuityCounter() uint8 {
-	return p[3] & 0x0f
+	return p[3] & 0x0F
 }
 
 // AdaptationFieldLength returns number of bytes in the adaptation field immediately following this byte.
