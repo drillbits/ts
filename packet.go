@@ -88,6 +88,18 @@ func (p Packet) AdaptationField() AdaptationField {
 	return AdaptationField(p[4 : 5+afLen])
 }
 
+// PayloadData returns Payload data bytes.
+func (p Packet) PayloadData() []byte {
+	if !p.PayloadFlag() {
+		return nil
+	}
+	start := 4
+	if p.AdaptationFieldFlag() {
+		start += p.AdaptationFieldLength()
+	}
+	return p[start:len(p)]
+}
+
 // Length returns number of bytes in the adaptation field immediately following this byte.
 func (af AdaptationField) Length() int {
 	return int(af[0])
