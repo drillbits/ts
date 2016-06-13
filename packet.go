@@ -93,9 +93,9 @@ func (p Packet) PayloadData() []byte {
 	if !p.PayloadFlag() {
 		return nil
 	}
-	start := 5
+	start := 4
 	if p.AdaptationFieldFlag() {
-		start += p.AdaptationFieldLength()
+		start += p.AdaptationFieldLength() + 1
 	}
 	return p[start:len(p)]
 }
